@@ -16,6 +16,7 @@
 """FedDyn horizontal FL trainer."""
 
 import logging
+import time
 
 from flame.channel import VAL_CH_STATE_RECV, VAL_CH_STATE_SEND
 from flame.common.constants import TrainState, DeviceType
@@ -72,6 +73,12 @@ class Trainer(BaseTrainer):
         # one aggregator is sufficient
         end = channel.one_end(VAL_CH_STATE_RECV)
         msg, _ = channel.recv(end)
+
+        # check for empty message
+        if not msg:
+            logger.debug("no message received")
+            time.sleep(1)
+            return
 
         if MessageType.WEIGHTS in msg:
             self.weights = weights_to_model_device(msg[MessageType.WEIGHTS], self.model)
@@ -159,7 +166,9 @@ class Trainer(BaseTrainer):
 
             task_init = Tasklet("init", self.initialize)
 
-            task_put_dataset_size = Tasklet("upload_dataset_size", self.put, TAG_UPLOAD_DATASET_SIZE)
+            task_put_dataset_size = Tasklet(
+                "upload_dataset_size", self.put, TAG_UPLOAD_DATASET_SIZE
+            )
 
             task_get = Tasklet("fetch", self.get, TAG_FETCH)
 
