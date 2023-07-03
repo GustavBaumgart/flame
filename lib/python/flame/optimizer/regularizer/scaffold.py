@@ -64,15 +64,13 @@ class ScaffoldRegularizer(Regularizer):
     
     def set_c_glob(self, c_glob):
         self.c_glob = c_glob
-        self.c_model = deepcopy(self.state_dict["glob_model"])
-        self.c_model.load_state_dict(self.c_glob)
-        c_glob_params = get_params_detached_pytorch(self.c_model)
+        c_model = deepcopy(self.state_dict["glob_model"])
+        c_model.load_state_dict(self.c_glob)
+        c_glob_params = get_params_detached_pytorch(c_model)
         self.c_glob_vector = get_params_as_vector_pytorch(c_glob_params)
         
-        if self.c_loc_vector is not None:
-            self.state_vector_diff = - self.c_loc_vector + self.c_glob_vector / self.client_weight
-        else:
-            self.state_vector_diff = self.c_glob_vector / self.client_weight
+        # for regularizer
+        self.state_vector_diff = - self.c_loc_vector + self.c_glob_vector / self.client_weight
 
     def update(self):
         """Update the c-terms."""

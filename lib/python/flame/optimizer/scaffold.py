@@ -120,9 +120,7 @@ class Scaffold(FedAvg):
             tres = cache.pop(k)
             self.aggregate_fn(tres, rate)
 
-        avg_model = self.agg_weights
-        
-        return avg_model
+        return self.agg_weights
     
     def c_aggregate_fn(self, tres, rate):
         for k, v in tres.weights.items():
