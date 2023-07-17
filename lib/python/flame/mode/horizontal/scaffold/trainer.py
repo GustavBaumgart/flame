@@ -108,6 +108,9 @@ class Trainer(BaseTrainer):
             self._update_model()
             self.regularizer.save_state(TrainState.PRE, glob_model=self.model)
         
+        if MessageType.C_WEIGHTS in msg:
+            self.regularizer.set_c_glob(weights_to_model_device(msg[MessageType.C_WEIGHTS], self.model))
+
         if MessageType.EOT in msg:
             self._work_done = msg[MessageType.EOT]
 
