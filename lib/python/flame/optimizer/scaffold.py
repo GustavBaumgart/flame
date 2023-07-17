@@ -61,17 +61,13 @@ class Scaffold(FedAvg):
                 num_trainers = len(dataset_sizes)
                 self.weight_dict = {end:(dataset_sizes[end]/total_samples) * num_trainers for end in dataset_sizes}
             
-            if "glob_model" in kwargs:
-                if not self.c_glob:
+            if "glob_weights" in kwargs:
+                if self.c_glob is None:
                     import torch
-                    glob_model = kwargs["glob_model"]
-                    glob_model_state_dict = glob_model.state_dict()
+                    glob_model_state_dict = kwargs["glob_weights"]
                     
                     # populate c_glob
                     self.c_glob = {k: torch.zeros_like(glob_model_state_dict[k]) for k in glob_model_state_dict}
-    
-    def get_c_glob(self, end):
-        return {k:self.c_glob[k] / self.weight_dict[end] for k in self.c_glob}
 
     def do(
         self,
@@ -127,7 +123,7 @@ class Scaffold(FedAvg):
     
     def c_aggregate_fn(self, tres, rate, end):
         for k, v in tres.weights.items():
-            tmp = v * rate * self.weight_dict[end]
+            tmp = v * rate
             # type of model weight may have changed on the trainer side due to scaling
             tmp = tmp.to(dtype=self.c_agg_weights[k].dtype) if tmp.dtype != self.c_agg_weights[k].dtype else tmp
 

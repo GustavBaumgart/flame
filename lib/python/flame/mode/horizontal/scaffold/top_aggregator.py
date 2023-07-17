@@ -180,7 +180,7 @@ class TopAggregator(BaseTopAggregator):
         self._update_weights()
         
         # if c_glob variable not defined in optimizer, fill with 0s
-        self.optimizer.save_state(TrainState.PRE, glob_model=self.model)
+        self.optimizer.save_state(TrainState.PRE, glob_weights=self.weights)
 
         selected_ends = channel.ends()
         datasampler_metadata = self.datasampler.get_metadata(self._round, selected_ends)
@@ -194,7 +194,8 @@ class TopAggregator(BaseTopAggregator):
                     MessageType.WEIGHTS: weights_to_device(
                         self.weights, DeviceType.CPU
                     ),
-                    MessageType.C_WEIGHTS: weights_to_device(self.optimizer.get_c_glob(end), DeviceType.CPU),
+                    MessageType.CLIENT_WEIGHT: self.optimizer.weight_dict.get(end, 1),
+                    MessageType.C_WEIGHTS: weights_to_device(self.optimizer.c_glob, DeviceType.CPU),
                     MessageType.ROUND: self._round,
                     MessageType.DATASAMPLER_METADATA: datasampler_metadata,
                 },

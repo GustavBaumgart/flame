@@ -52,3 +52,4 @@ class MessageType(Enum):
     RES_COORDINATED_ENDS = 17  # get ends coordinated by a coordinator
     
     C_WEIGHTS = 18  # weights used in the SCAFFOLD algorithm
+    CLIENT_WEIGHT = 19 # value used in the SCAFFOLD algorithm
