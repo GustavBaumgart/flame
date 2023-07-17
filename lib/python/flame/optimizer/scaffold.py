@@ -69,6 +69,9 @@ class Scaffold(FedAvg):
                     
                     # populate c_glob
                     self.c_glob = {k: torch.zeros_like(glob_model_state_dict[k]) for k in glob_model_state_dict}
+    
+    def get_c_glob(self, end):
+        return {k:self.c_glob[k] / self.weight_dict[end] for k in self.c_glob}
 
     def do(
         self,
@@ -107,7 +110,7 @@ class Scaffold(FedAvg):
         rate = 1 / n_clnt
         for k in list(c_cache.iterkeys()):
             tres = c_cache.pop(k)
-            self.c_aggregate_fn(tres, rate)
+            self.c_aggregate_fn(tres, rate, k)
         
         self.c_glob = self.c_agg_weights
         
@@ -122,9 +125,9 @@ class Scaffold(FedAvg):
 
         return self.agg_weights
     
-    def c_aggregate_fn(self, tres, rate):
+    def c_aggregate_fn(self, tres, rate, end):
         for k, v in tres.weights.items():
-            tmp = v * rate
+            tmp = v * rate * self.weight_dict[end]
             # type of model weight may have changed on the trainer side due to scaling
             tmp = tmp.to(dtype=self.c_agg_weights[k].dtype) if tmp.dtype != self.c_agg_weights[k].dtype else tmp
 

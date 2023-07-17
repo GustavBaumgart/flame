@@ -70,7 +70,7 @@ class ScaffoldRegularizer(Regularizer):
         self.c_glob_vector = get_params_as_vector_pytorch(c_glob_params)
         
         # for regularizer
-        self.state_vector_diff = - self.c_loc_vector + self.c_glob_vector / self.client_weight
+        self.state_vector_diff = - self.c_loc_vector + self.c_glob_vector
 
     def update(self):
         """Update the c-terms."""
@@ -98,7 +98,6 @@ class ScaffoldRegularizer(Regularizer):
         # adjust local pytorch state_dict
         new_c = {k: self.c_loc[k] - self.c_glob[k] + diff_mult * (w_t_state_dict[k] - w_state_dict[k]) for k in w_state_dict}
         
-        # scale up with client weight before sending delta
-        self.delta_c_loc = {k: (new_c[k] - self.c_loc[k]) * self.client_weight for k in new_c}
+        self.delta_c_loc = {k: (new_c[k] - self.c_loc[k]) for k in new_c}
         
         self.c_loc = new_c

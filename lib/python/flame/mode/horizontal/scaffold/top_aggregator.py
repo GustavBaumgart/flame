@@ -194,10 +194,9 @@ class TopAggregator(BaseTopAggregator):
                     MessageType.WEIGHTS: weights_to_device(
                         self.weights, DeviceType.CPU
                     ),
-                    MessageType.C_WEIGHTS: weights_to_device(self.optimizer.c_glob, DeviceType.CPU),
+                    MessageType.C_WEIGHTS: weights_to_device(self.optimizer.get_c_glob(end), DeviceType.CPU),
                     MessageType.ROUND: self._round,
                     MessageType.DATASAMPLER_METADATA: datasampler_metadata,
-                    MessageType.CLIENT_WEIGHT: self.optimizer.weight_dict[end],
                 },
             )
             # register round start time on each end for round duration measurement.
