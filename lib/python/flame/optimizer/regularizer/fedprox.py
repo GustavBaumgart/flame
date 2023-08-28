@@ -46,7 +46,7 @@ class FedProxRegularizer(Regularizer):
             w_t_vector = get_params_as_vector_pytorch(w_t)
             self.state_dict['w_t_vector'] = w_t_vector
         
-        return torch.sum(torch.pow(w_vector - w_t_vector, 2))
+        return self.mu * torch.sum(torch.pow(w_vector - w_t_vector, 2))
     
     def update(self):
         del self.state_dict['w_t_vector']
