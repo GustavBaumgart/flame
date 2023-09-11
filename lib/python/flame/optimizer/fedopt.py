@@ -81,15 +81,16 @@ class FedOPT(FedAvg):
                                       cache,
                                       total=total,
                                       version=version)
-        if self.agg_weights is None:
-            return self.current_weights
+        # if self.agg_weights is None:
+        #     return self.current_weights
 
-        if self.current_weights is None:
-            self.current_weights = self.agg_weights
-        else:
-            self.adapt_fn(self.agg_weights, self.current_weights)
+        # if self.current_weights is None:
+        #     self.current_weights = self.agg_weights
+        # else:
+        #     self.adapt_fn(self.agg_weights, self.current_weights)
 
-        return self.current_weights
+        # disable adaptive aggregation
+        return self.agg_weights
 
     @abstractmethod
     def _delta_v_pytorch(self):
